@@ -89,6 +89,38 @@ Feature: Custom profile fields should be visible and editable by those with the 
     And I should not see "notvisible_field"
     And I should not see "teachervisible_field"
 
+ @javascript
+  Scenario: User with moodle/site:viewuseridentity but without moodle/user:viewalldetails can only see visible profile fields and those with teacher visibility.
+    Given the following "roles" exist:
+      | name         | shortname   | description | archetype |
+      | Teachers User| teacherusers| teacherusers|           |
+    And the following "permission overrides" exist:
+      | capability                   | permission | role        | contextlevel | reference |
+      | moodle/user:viewalldetails   | Prohibit   | teacherusers| System       |           |
+      | moodle/site:viewuseridentity | Allow      | teacherusers| System       |           |
+    And the following "users" exist:
+      | username         | firstname   | lastname | email                   |
+      | user_teacherusers| teacherusers| 1        | teacherusers@example.com|
+    And the following "role assigns" exist:
+      | user             | role        | contextlevel | reference |
+      | user_teacherusers| teacherusers | System       |           |
+    And the following "course enrolments" exist:
+      | user             | course | role           |
+      | user_teacherusers| C1     | editingteacher |
+    And I log in as "user_teacherusers"
+    And I am on "Course 1" course homepage
+    And I navigate to course participants
+    And I follow "userwithinformation 1"
+
+    Then I should see "everyonevisible_field"
+    And I should see "everyonevisible_field_information"
+    And I should not see "uservisible_field"
+    And I should not see "uservisible_field_information"
+    And I should not see "notvisible_field"
+    And I should not see "notvisible_field_information"
+    And I should see "teachervisible_field"
+    And I should see "teachervisible_field_information"
+
   @javascript
   Scenario: User with moodle/user:viewalldetails and moodle/site:viewuseridentity but without moodle/user:update can view all profile fields.
     Given the following "roles" exist:
