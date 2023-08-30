@@ -1772,6 +1772,7 @@ class restore_section_structure_step extends restore_structure_step {
     protected function after_execute() {
         // Add section related files, with 'course_section' itemid to match
         $this->add_related_files('course', 'section', 'course_section');
+
     }
 }
 
@@ -1980,8 +1981,13 @@ class restore_course_structure_step extends restore_structure_step {
      * @param array $data
      */
     public function process_customfield($data) {
+        $restorefile=true;
         $handler = core_course\customfield\course_handler::create();
-        $handler->restore_instance_data_from_backup($this->task, $data);
+        $newitemid = $handler->restore_instance_data_from_backup($this->task, $data);
+        $data = (object)$data;
+        $oldid = $data->id;
+
+        $this->set_mapping('customfield_data',$oldid,$newitemid,$restorefile);
     }
 
     /**
@@ -2026,6 +2032,8 @@ class restore_course_structure_step extends restore_structure_step {
         // Add course related files, without itemid to match
         $this->add_related_files('course', 'summary', null);
         $this->add_related_files('course', 'overviewfiles', null);
+        $this->add_related_files('customfield_textarea','value','customfield_data');
+
 
         // Deal with legacy allowed modules.
         if ($this->legacyrestrictmodules) {

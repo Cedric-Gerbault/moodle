@@ -217,6 +217,7 @@ class course_handler extends \core_customfield\handler {
      * @param array $data
      */
     public function restore_instance_data_from_backup(\restore_task $task, array $data) {
+        global $DB;
         $courseid = $task->get_courseid();
         $context = $this->get_instance_context($courseid);
         $editablefields = $this->get_editable_fields($courseid);
@@ -233,9 +234,10 @@ class course_handler extends \core_customfield\handler {
                     $d->set('valueformat', $data['valueformat']);
                     $d->set('contextid', $context->id);
                     $d->save();
-                }
-                return;
+                } 
+                return $d->get('id');
             }
+
         }
     }
 }
