@@ -89,7 +89,7 @@ Feature: Custom profile fields should be visible and editable by those with the 
     And I should not see "notvisible_field"
     And I should not see "teachervisible_field"
 
-@javascript
+  @javascript
   Scenario: User with moodle/site:viewuseridentity but without moodle/user:viewalldetails can only see visible profile fields and those with teacher visibility.
     Given the following "roles" exist:
       | name         | shortname   | description | archetype |
@@ -120,7 +120,7 @@ Feature: Custom profile fields should be visible and editable by those with the 
     And I should not see "notvisible_field_information"
     And I should see "teachervisible_field"
     And I should see "teachervisible_field_information"
-    
+
   @javascript
   Scenario: User with moodle/user:viewalldetails and moodle/site:viewuseridentity but without moodle/user:update can view all profile fields.
     Given the following "roles" exist:
