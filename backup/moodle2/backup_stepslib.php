@@ -474,9 +474,7 @@ class backup_course_structure_step extends backup_structure_step {
         $customfield = new backup_nested_element('customfield', array('id'), array(
           'shortname', 'type', 'value', 'valueformat'
         ));
-        $customfield->annotate_files('customfield_textarea','value','id');
-
-
+        $customfield->annotate_files('customfield_textarea', 'value', 'id');
         $courseformatoptions = new backup_nested_element('courseformatoptions');
         $courseformatoption = new backup_nested_element('courseformatoption', [], [
             'courseid', 'format', 'sectionid', 'name', 'value'
