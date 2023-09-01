@@ -474,7 +474,6 @@ class backup_course_structure_step extends backup_structure_step {
         $customfield = new backup_nested_element('customfield', array('id'), array(
           'shortname', 'type', 'value', 'valueformat'
         ));
-        $customfield->annotate_files('customfield_textarea', 'value', 'id');
         $courseformatoptions = new backup_nested_element('courseformatoptions');
         $courseformatoption = new backup_nested_element('courseformatoption', [], [
             'courseid', 'format', 'sectionid', 'name', 'value'
@@ -555,7 +554,14 @@ class backup_course_structure_step extends backup_structure_step {
         $handler = core_course\customfield\course_handler::create();
         $fieldsforbackup = $handler->get_instance_data_for_backup($this->task->get_courseid());
         $customfield->set_source_array($fieldsforbackup);
-
+        //Check all customfields to backup and annotate files accordingly
+        foreach($fieldsforbackup as $field){
+            if($DB->record_exists('files', array('component'=> 'customfield_'.$field['type'], 'itemid'=>$field['id']))){
+                $filerecord = $DB->get_record('files',array('component'=> 'customfield_'.$field['type'], 'itemid'=>$field['id']));
+                $filerecord = (object)$filerecord;
+                $customfield->annotate_files($filerecord->component,$filerecord->filearea,'id',$filerecord->contextid);
+            }
+        }                           
         // Some annotations
 
         $course->annotate_ids('grouping', 'defaultgroupingid');

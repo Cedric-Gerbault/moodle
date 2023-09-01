@@ -2026,11 +2026,19 @@ class restore_course_structure_step extends restore_structure_step {
 
     protected function after_execute() {
         global $DB;
-
+        //check fo allr customfields including files and restore accordingly
+        $customfields =$DB->get_records('backup_ids_temp', array('backupid' => $this->get_restoreid(),'itemname' => 'customfield_data'));
+        foreach($customfields as $field){
+            $sql = 'SELECT cd.id, cf.type
+            FROM {customfield_data} cd
+            INNER JOIN {customfield_field} cf ON cd.fieldid = cf.id
+            WHERE cd.id = '.$field->itemid;
+            $fieldtype = $DB->get_record_sql($sql);
+            $this->add_related_files('customfield_'.$fieldtype->type,'value','customfield_data');
+        }
         // Add course related files, without itemid to match
         $this->add_related_files('course', 'summary', null);
         $this->add_related_files('course', 'overviewfiles', null);
-        $this->add_related_files('customfield_textarea', 'value', 'customfield_data');
 
         // Deal with legacy allowed modules.
         if ($this->legacyrestrictmodules) {
