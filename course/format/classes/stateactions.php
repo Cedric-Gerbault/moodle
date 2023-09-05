@@ -1030,8 +1030,8 @@ class stateactions {
         }
 
         // No section actions are allowed if course format does not support sections.
-        $courseformat = course_get_format($course->id);
-        if (!$courseformat->uses_sections()) {
+        $courseformat = course_get_format($course->id);;
+        if (!$courseformat->uses_sections() && $courseformat->get_format() != 'site') {
             throw new moodle_exception('sectionactionnotsupported', 'core', null, $info);
         }
 

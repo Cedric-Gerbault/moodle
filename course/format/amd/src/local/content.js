@@ -218,9 +218,8 @@ export default class Component extends BaseComponent {
         // Section return is a global page variable but most formats define it just before start printing
         // the course content. This is the reason why we define this page setting here.
         this.reactive.sectionReturn = this.sectionReturn;
-
         // Check if the course format is compatible with reactive components.
-        if (!this.reactive.supportComponents) {
+        if (!this.reactive.supportComponents && !this.element.classList.contains('sitetopic')) {
             return [];
         }
         return [

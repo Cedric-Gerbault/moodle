@@ -36,11 +36,16 @@
         </a>
     </div>
     {{/showsettings}}
-    <div class="sitetopic">
-        <ul class="topics frontpage">
+    <div id = "course-format-{{uniqid}}" class="sitetopic">
+        <ul class="topics frontpage" data-for="course_sectionlist">
             {{#sections}}
                 {{> core_courseformat/local/content/section }}
             {{/sections}}
         </ul>
     </div>
 </div>
+{{#js}}
+require(['core_courseformat/local/content'], function(component) {
+    component.init('course-format-{{uniqid}}', {},1 );
+});
+{{/js}}

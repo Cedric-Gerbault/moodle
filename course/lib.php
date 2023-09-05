@@ -3242,9 +3242,9 @@ function include_course_editor(course_format $format) {
 
     $course = $format->get_course();
 
-    if ($SITE->id === $course->id) {
-        return;
-    }
+    // if ($SITE->id === $course->id) {
+    //     return;
+    // }
 
     $statekey = course_format::session_cache($course);
 

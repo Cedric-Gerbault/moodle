@@ -63,6 +63,16 @@ class format_site extends course_format {
         }
     }
 
+    public function supports_ajax() {
+        $ajaxsupport = new stdClass();
+        $ajaxsupport->capable = true;
+        return $ajaxsupport;
+    }
+
+    public function supports_components() {
+        return true;
+    }
+
     /**
      * For this fake course referring to the whole site, the site homepage is always returned
      * regardless of arguments
