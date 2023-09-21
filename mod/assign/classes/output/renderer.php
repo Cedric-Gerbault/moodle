@@ -919,7 +919,6 @@ class renderer extends \plugin_renderer_base {
                 if ($onegrade->attemptnumber == $submission->attemptnumber) {
 
                         $grade = $onegrade;
-                    
                     break;
                 }
             }
@@ -960,7 +959,7 @@ class renderer extends \plugin_renderer_base {
                     }
                 }
             }
-            if ($grade->grade > 0) {
+            if ($grade->grade > 0 ||$grade->grade == null) {
                 // Heading 'feedback'.
                 $title = get_string('feedback', 'assign', $i);
                 $title .= $this->output->spacer(array('width'=>10));
