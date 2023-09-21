@@ -917,9 +917,9 @@ class renderer extends \plugin_renderer_base {
             $grade = null;
             foreach ($history->grades as $onegrade) {
                 if ($onegrade->attemptnumber == $submission->attemptnumber) {
-                    if ($onegrade->grade != ASSIGN_GRADE_NOT_SET) {
+
                         $grade = $onegrade;
-                    }
+                    
                     break;
                 }
             }
@@ -960,8 +960,7 @@ class renderer extends \plugin_renderer_base {
                     }
                 }
             }
-
-            if ($grade) {
+            if ($grade->grade > 0) {
                 // Heading 'feedback'.
                 $title = get_string('feedback', 'assign', $i);
                 $title .= $this->output->spacer(array('width'=>10));
@@ -1023,6 +1022,49 @@ class renderer extends \plugin_renderer_base {
 
                 }
 
+            }
+            else{
+                                // Heading 'feedback'.
+                                $title = get_string('feedback', 'assign', $i);
+                                $title .= $this->output->spacer(array('width'=>10));
+                                if ($history->cangrade) {
+                                    // Edit previous feedback.
+                                    $returnparams = http_build_query($history->returnparams);
+                                    $urlparams = array('id' => $history->coursemoduleid,
+                                                   'rownum'=>$history->rownum,
+                                                   'useridlistid'=>$history->useridlistid,
+                                                   'attemptnumber'=>$grade->attemptnumber,
+                                                   'action'=>'grade',
+                                                   'returnaction'=>$history->returnaction,
+                                                   'returnparams'=>$returnparams);
+                                    $url = new \moodle_url('/mod/assign/view.php', $urlparams);
+                                    $icon = new \pix_icon('gradefeedback',
+                                                            get_string('editattemptfeedback', 'assign', $grade->attemptnumber+1),
+                                                            'mod_assign');
+                                    $title .= $this->output->action_icon($url, $icon);
+                                }
+                                $cell = new \html_table_cell($title);
+                                $cell->attributes['class'] = 'feedbacktitle';
+                                $cell->colspan = 2;
+                                $t->data[] = new \html_table_row(array($cell));
+                                // Feedback from plugins.
+                                foreach ($history->feedbackplugins as $plugin) {
+                                    if ($plugin->is_enabled() &&
+                                        $plugin->is_visible() &&
+                                        $plugin->has_user_summary() &&
+                                        !$plugin->is_empty($grade)) {
+                
+                                        $pluginfeedback = new \assign_feedback_plugin_feedback(
+                                            $plugin, $grade, \assign_feedback_plugin_feedback::SUMMARY, $history->coursemoduleid,
+                                            $history->returnaction, $history->returnparams
+                                        );
+                
+                                        $cell1content = $plugin->get_name();
+                                        $cell2content = $this->render($pluginfeedback);
+                                        $this->add_table_row_tuple($t, $cell1content, $cell2content);
+                                    }
+                
+                                }
             }
 
             $o .= \html_writer::table($t);
