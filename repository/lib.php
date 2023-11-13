@@ -487,7 +487,7 @@ class repository_type implements cacheable_object {
 /**
  * This is the base class of the repository class.
  *
- * To create repository plugin, see: {@link http://docs.moodle.org/dev/Repository_plugins}
+ * To create repository plugin, see: {@link https://moodledev.io/docs/apis/plugintypes/repository}
  * See an example: repository_dropbox
  *
  * @package   core_repository
@@ -2175,7 +2175,7 @@ abstract class repository implements cacheable_object {
     /**
      * Given a path, and perhaps a search, get a list of files.
      *
-     * See details on {@link http://docs.moodle.org/dev/Repository_plugins}
+     * See details on {@link https://moodledev.io/docs/apis/plugintypes/repository}
      *
      * @param string $path this parameter can a folder name, or a identification of folder
      * @param string $page the page number of file list
@@ -3189,11 +3189,6 @@ function initialise_filepicker($args) {
     $return->userprefs['recentrepository'] = get_user_preferences('filepicker_recentrepository', '');
     $return->userprefs['recentlicense'] = get_user_preferences('filepicker_recentlicense', '');
     $return->userprefs['recentviewmode'] = get_user_preferences('filepicker_recentviewmode', '');
-
-    user_preference_allow_ajax_update('filepicker_recentrepository', PARAM_INT);
-    user_preference_allow_ajax_update('filepicker_recentlicense', PARAM_SAFEDIR);
-    user_preference_allow_ajax_update('filepicker_recentviewmode', PARAM_INT);
-
 
     // provided by form element
     $return->accepted_types = file_get_typegroup('extension', $args->accepted_types);

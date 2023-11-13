@@ -2447,6 +2447,8 @@ class admin_setting_configtext extends admin_setting {
 
     /** @var int default field size */
     public $size;
+    /** @var array List of arbitrary data attributes */
+    protected $datavalues = [];
 
     /**
      * Config text constructor
@@ -2531,10 +2533,23 @@ class admin_setting_configtext extends admin_setting {
     }
 
     /**
+     * Set arbitrary data attributes for template.
+     *
+     * @param string $key Attribute key for template.
+     * @param string $value Attribute value for template.
+     */
+    public function set_data_attribute(string $key, string $value): void {
+        $this->datavalues[] = [
+            'key' => $key,
+            'value' => $value,
+        ];
+    }
+
+    /**
      * Return an XHTML string for the setting
      * @return string Returns an XHTML string
      */
-    public function output_html($data, $query='') {
+    public function output_html($data, $query = '') {
         global $OUTPUT;
 
         $default = $this->get_defaultsetting();
@@ -2545,6 +2560,8 @@ class admin_setting_configtext extends admin_setting {
             'value' => $data,
             'forceltr' => $this->get_force_ltr(),
             'readonly' => $this->is_readonly(),
+            'data' => $this->datavalues,
+            'maxcharacter' => array_key_exists('validation-max-length', $this->datavalues),
         ];
         $element = $OUTPUT->render_from_template('core_admin/setting_configtext', $context);
 
@@ -2578,6 +2595,7 @@ class admin_setting_configtext_with_maxlength extends admin_setting_configtext {
     public function __construct($name, $visiblename, $description, $defaultsetting, $paramtype=PARAM_RAW,
                                 $size=null, $maxlength = 0) {
         $this->maxlength = $maxlength;
+        $this->set_data_attribute('validation-max-length', $maxlength);
         parent::__construct($name, $visiblename, $description, $defaultsetting, $paramtype, $size);
     }
 
@@ -2603,6 +2621,20 @@ class admin_setting_configtext_with_maxlength extends admin_setting_configtext {
         } else {
             return $parentvalidation;
         }
+    }
+
+    /**
+     * Return an XHTML string for the setting.
+     *
+     * @param string $data data.
+     * @param string $query query statement.
+     * @return string Returns an XHTML string
+     */
+    public function output_html($data, $query = ''): string {
+        global $PAGE;
+        $PAGE->requires->js_call_amd('core_form/configtext_maxlength', 'init');
+
+        return parent::output_html($data, $query);
     }
 }
 
@@ -8722,8 +8754,6 @@ function admin_externalpage_setup($section, $extrabutton = '', array $extraurlpa
         $USER->editing = $adminediting;
     }
 
-    $visiblepathtosection = array_reverse($extpage->visiblepath);
-
     if ($PAGE->user_allowed_editing() && !$PAGE->theme->haseditswitch) {
         if ($PAGE->user_is_editing()) {
             $caption = get_string('blockseditoff');
@@ -8735,7 +8765,7 @@ function admin_externalpage_setup($section, $extrabutton = '', array $extraurlpa
         $PAGE->set_button($OUTPUT->single_button($url, $caption, 'get'));
     }
 
-    $PAGE->set_title("$SITE->shortname: " . implode(": ", $visiblepathtosection));
+    $PAGE->set_title(implode(moodle_page::TITLE_SEPARATOR, $extpage->visiblepath));
     $PAGE->set_heading($SITE->fullname);
 
     if ($hassiteconfig && empty($options['nosearch'])) {
