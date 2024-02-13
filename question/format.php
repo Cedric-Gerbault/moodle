@@ -114,6 +114,9 @@ class qformat_default {
      * @return string the error message if the file encoding is not UTF-8
      */
     protected function validate_is_utf8_file(stored_file $file): string {
+        // Raise time and memory, as the check encoding function can be expensive for big files
+        core_php_time_limit::raise();
+        raise_memory_limit(MEMORY_EXTRA);
         if (!mb_check_encoding($file->get_content(), "UTF-8")) {
             return get_string('importwrongfileencoding', 'question',  $this->get_name());
         }
